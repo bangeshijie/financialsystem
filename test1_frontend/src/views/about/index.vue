@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Download, Star } from '@element-plus/icons-vue';
+
 
 // --- 类型定义 ---
 interface Release {

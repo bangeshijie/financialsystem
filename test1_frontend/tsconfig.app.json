@@ -5,13 +5,11 @@
     "types": [
       "vite/client"
     ],
-    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "src/*"
-      ]
+        "./src/*"
+      ] // 注意：路径改为相对于当前配置文件（即项目根目录）的 "./src/*"
     },
-    "ignoreDeprecations": "6.0",
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
