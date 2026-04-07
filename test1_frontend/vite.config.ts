@@ -47,11 +47,14 @@ export default defineConfig(({ mode }) => {
       open: true,
       proxy: {
         [env.VITE_APP_BASE_API]: {
-          // 获取数据的服务器地址
           target: env.VITE_SERVE,
-          // 需要代理跨域
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
+        },
+        // 新增：代理静态文件请求
+        '/static': {
+          target: env.VITE_SERVE,  // 你的后端地址，如 http://localhost:8000
+          changeOrigin: true,
         }
       }
     }

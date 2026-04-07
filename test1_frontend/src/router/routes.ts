@@ -38,6 +38,7 @@ export const constantRoutes = [
 
 
             },
+
         },
 
         ]
@@ -52,6 +53,46 @@ export const constantRoutes = [
             icon: 'TrendCharts'
 
         }
+    },
+
+    // {
+    //     path: '/about',
+    //     component: () => import('@/views/about/index.vue'),
+    //     name: 'About',
+    //     meta: {
+    //         title: '关于我们',
+    //         hidden: false,
+    //         icon: 'Reading',
+
+    //     },
+    // },
+
+
+    {
+        path: '/about',
+        component: () => import('@/layout/index.vue'),
+        name: 'About',
+        redirect: '/about/project',
+        meta: {
+            title: '关于',
+            hidden: false,
+            icon: 'Reading',
+
+
+        },
+        children: [
+            {
+                path: '/about/project',
+                component: () => import('@/views/about/index.vue'),
+                name: 'AboutProject',
+                meta: {
+                    title: '关于项目',
+                    hidden: false,
+                    icon: 'Memo',
+                }
+
+            },
+        ],
     },
 
 
@@ -233,7 +274,7 @@ export const asyncRoutes = [
         meta: {
             title: '报表管理',
             hidden: false,
-            icon: 'Memo',
+            icon: 'Postcard',
         },
         children: [{
             path: '/reports/income',
@@ -242,7 +283,7 @@ export const asyncRoutes = [
             meta: {
                 title: '利润表',
                 hidden: false,
-                icon: 'ShoppingCartFull',
+                icon: 'Coin',
             },
         },
         {
@@ -252,7 +293,7 @@ export const asyncRoutes = [
             meta: {
                 title: '资产负债表',
                 hidden: false,
-                icon: 'ChromeFilled',
+                icon: 'Magnet',
             },
 
 
@@ -265,7 +306,7 @@ export const asyncRoutes = [
             meta: {
                 title: '现金流表',
                 hidden: false,
-                icon: 'ChromeFilled',
+                icon: 'Money',
             },
         },
         ]

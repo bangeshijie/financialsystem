@@ -95,6 +95,12 @@ export const useUserStore = defineStore("user", () => {
     const routes = ref<string[]>([]);
     const roles = ref<string[]>([]);
 
+    // 【核心修改】调整路由拼接顺序
+    // 1. 先找到 constantRoutes 中除了 '/about' 以外的部分
+    const baseRoutes = constantRoutes.filter(route => route.path !== '/about');
+    // 2. 将 About 路由单独提取出来
+    const aboutRoute = constantRoutes.find(route => route.path === '/about') || null;
+
     // =======================
     // 2. Actions (行为/方法)
     // 使用 const + 箭头函数定义
@@ -164,7 +170,14 @@ export const useUserStore = defineStore("user", () => {
                 // 2. 使用深拷贝防止污染原始 asyncRoutes 数组
                 const userAsyncRoutes = filterAsyncRoutes(cloneDeep(asyncRoutes), result.data.routes);
                 // 3. 生成完整的菜单路由 (用于侧边栏渲染)
-                menuRoutes.value = [...constantRoutes, ...userAsyncRoutes, ...anyRoutes];
+
+                // 基础常量路由 -> 过滤后的异步路由 -> About -> 任意路由(404)
+                menuRoutes.value = [
+                    ...baseRoutes,
+                    ...userAsyncRoutes,
+                    ...(aboutRoute ? [aboutRoute] : []), // 如果找到了 About 路由，就加进去
+                    ...anyRoutes
+                ];
                 // 4. 【核心修改】动态挂载路由
                 // 只挂载当前用户有权访问的路由 (userAsyncRoutes) 和 任意路由 (anyRoutes)
                 // 不要挂载所有的 asyncRoutes，否则没权限的人也能通过 URL 访问
@@ -177,7 +190,8 @@ export const useUserStore = defineStore("user", () => {
                     }
                 });
 
-                console.log('动态路由挂载完成，当前路由表:', router.getRoutes().map(r => r.name));
+
+                // console.log('动态路由挂载完成，当前路由表:', router.getRoutes().map(r => r.name));
 
                 return 'ok';
             } else {

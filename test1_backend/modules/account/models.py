@@ -30,6 +30,9 @@ class AccountingSubject(Base):
     is_active = Column(Boolean, default=True, comment="是否启用")
     full_name = Column(String(255), nullable=True, comment="全称路径 (如: 资产/流动资产/货币资金)")
 
+    # 版本
+    account_version = Column(String(20), default='标准财报科目', comment="科目版本")
+
     # 关系：自关联 (一个父科目有多个子科目)
     # children: 一个父节点对应多个子节点 (One-to-Many)
     # cascade="all, delete-orphan" 确保删除父节点时处理子节点（根据你的业务需求决定是否开启）

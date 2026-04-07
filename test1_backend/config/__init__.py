@@ -7,10 +7,13 @@ from modules.users.models import User,UserToken,UserRole,Role,Menu,RoleMenu
 
 from modules.account.models import AccountingSubject
 from modules.company.models import  Company
+from modules.sale.models import City
+
 
 
 # 导出方便外部使用
 __all__ = ["Base",
            "User", "UserToken","UserRole","Role","Menu","RoleMenu",
            "AccountingSubject",
-           "Company"]
+           "Company",
+          "City"]

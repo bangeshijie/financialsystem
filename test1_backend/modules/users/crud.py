@@ -16,7 +16,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from modules.users.models import User, UserToken, UserRole,Menu, RoleMenu, Role
 from modules.users.schemas import UserRequest, UserUpdateRequest
-from utils.upload_image import settings
+
+from utils.upload_image import AvatarUpload, DEFAULT_AVATAR_FILENAME
 #
 #
 # 根据用户名查询数据库
@@ -419,6 +420,27 @@ async def admin_reset_password(db: AsyncSession, target_username: str, new_passw
     return user
 
 
+async def cleanup_user_resources(user: User) -> None:
+    """
+    清理用户相关的静态资源文件
+    包括：头像、上传的附件等
+    """
+    # 1. 清理用户头像
+    if user.avatar and user.avatar != DEFAULT_AVATAR_FILENAME:
+        await AvatarUpload.delete_old_avatar(user.avatar)
+
+    # 2. 【扩展点】清理用户的其他资源
+    # 例如：用户上传的认证图片、合同文件等
+    # await cleanup_user_documents(user.user_id)
+    # await cleanup_user_certificates(user.user_id)
+
+    # 3. 【可选】清理用户专属目录（如果有）
+    # user_folder = f"static/uploads/users/{user.user_id}"
+    # if os.path.exists(user_folder):
+    #     import shutil
+    #     shutil.rmtree(user_folder)
+
+
 async def delete_user(db: AsyncSession, target_username: str):
     """
     管理员删除指定用户
@@ -431,13 +453,13 @@ async def delete_user(db: AsyncSession, target_username: str):
     if not user:
         raise HTTPException(status_code=404, detail="用户不存在，无法删除")
 
-    # 2. 执行删除操作
+        # 2. 【新增】清理用户的静态资源文件
+    await cleanup_user_resources(user)
+
+    # 3. 执行删除操作（会级联删除 UserRole、UserToken 等关联数据）
     await db.delete(user)
     await db.commit()
 
-    # 注意：commit 后 user 对象可能变为 detached 状态，如果需要返回详细信息，
-    # 可以在 delete 前复制必要字段，或者直接返回成功标志。
-    # 这里为了简单，我们返回刚才查到的 user 对象（包含用户名等信息）
     return user
 
 
@@ -463,7 +485,12 @@ async def delete_target_users(db: AsyncSession, target_usernames: List[str]) -> 
             raise HTTPException(status_code=404, detail=f"用户 '{username}' 不存在，无法执行批量删除")
         users_to_delete.append(user)
 
-    # 2. 执行删除操作
+        # 2. 【新增】批量清理用户的静态资源文件
+    for user in users_to_delete:
+        await cleanup_user_resources(user)
+
+
+    # 3. 执行删除操作
     for user in users_to_delete:
         await db.delete(user)
         # 复制必要信息，因为 commit 后对象会变成 detached 状态，某些字段可能无法访问

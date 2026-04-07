@@ -2,7 +2,7 @@ import os
 import uuid
 import aiofiles
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 from fastapi import UploadFile, HTTPException
 from PIL import Image
 import io
@@ -10,7 +10,7 @@ from db.session import ASYNC_DATABASE_URL
 
 from typing import Optional
 
-class Settings():
+class Settings:
     # 数据库配置
     DATABASE_URL: str = ASYNC_DATABASE_URL
 
@@ -26,6 +26,9 @@ class Settings():
 
 
 settings = Settings()
+
+
+
 
 # 确保上传目录存在
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
@@ -112,27 +115,63 @@ class AvatarUpload:
         return f"/static/uploads/avatars/{filename}"
 
     @staticmethod
-    async def delete_old_avatar(filename: str):
+    async def delete_old_avatar(filename: str, silent: bool = True) -> bool:
         """
-        删除旧头像文件
-        保护逻辑：如果文件名是默认头像 (totoro.png)，则不执行物理删除。
+        删除旧头像文件（支持同步和异步）
+
+        Args:
+            filename: 头像文件名
+            silent: 是否静默失败（不抛出异常）
+
+        Returns:
+            bool: 是否删除成功
         """
         if not filename:
-            return
+            return False
 
-        # 【关键修改】检查是否为默认头像
+        # 保护默认头像
         if filename == DEFAULT_AVATAR_FILENAME:
-            print(f"[SKIP] 尝试删除默认头像 '{filename}'，已跳过物理删除操作以保护资源。")
-            return
+            if not silent:
+                print(f"[SKIP] 默认头像 '{filename}' 受到保护，不会删除")
+            return False
 
         filepath = os.path.join(settings.UPLOAD_DIR, filename)
 
         if os.path.exists(filepath):
             try:
                 os.remove(filepath)
-                print(f"[SUCCESS] 成功删除旧头像文件: {filename}")
+                print(f"[SUCCESS] 删除头像文件: {filename}")
+                return True
             except Exception as e:
-                print(f"[ERROR] 删除旧头像失败: {filename}, 错误信息: {e}")
+                if not silent:
+                    raise HTTPException(
+                        status_code=500,
+                        detail=f"删除头像文件失败: {str(e)}"
+                    )
+                print(f"[ERROR] 删除头像失败: {filename}, 错误: {e}")
+                return False
         else:
-            # 文件不存在可能是已经被删了，或者路径不对，通常不需要报错，记录一下即可
-            print(f"[INFO] 未找到要删除的头像文件: {filepath}")
+            print(f"[INFO] 头像文件不存在: {filepath}")
+            return False
+
+    @staticmethod
+    async def delete_avatar_batch(filenames: List[str]) -> dict:
+        """
+        批量删除头像文件
+
+        Returns:
+            {
+                "success": ["file1.jpg", "file2.jpg"],
+                "failed": ["file3.jpg"]
+            }
+        """
+        result = {"success": [], "failed": []}
+
+        for filename in filenames:
+            success = await AvatarUpload.delete_old_avatar(filename, silent=True)
+            if success:
+                result["success"].append(filename)
+            else:
+                result["failed"].append(filename)
+
+        return result

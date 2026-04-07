@@ -22,7 +22,8 @@ async def lifespan(app: FastAPI):
     logger.info("⏳ 应用正在启动...")
     async with AsyncSessionLocal() as session:
         try:
-            await init_db_tables()
+            # 【已移除】表结构由 Alembic 管理，请使用 "alembic upgrade head" 命令更新结构
+            # await init_db_tables()
             await seed_default_roles()
             await seed_default_users()
             logger.info("✅ 数据库初始化完成！")

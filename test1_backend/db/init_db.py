@@ -135,7 +135,7 @@ async def seed_default_users():
 
 async def main():
     print("🚀 开始初始化数据库...")
-    await init_db_tables()
+    # await init_db_tables()       因为有alembic迁移，这里不需要初始化表了 !!!!!!!
     await seed_default_roles()
     await seed_default_users()
     print("🎉 数据库初始化全部完成！")

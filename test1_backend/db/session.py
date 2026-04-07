@@ -14,7 +14,7 @@ ASYNC_DATABASE_URL = f"mysql+aiomysql://{os.getenv('MYSQL_USER')}:{os.getenv('MY
 # 创建引擎
 async_engine = create_async_engine(
     ASYNC_DATABASE_URL,
-    echo=False,             #正式环境 关闭 减少日志输出，提升性能
+    echo=True,             #正式环境 关闭 减少日志输出，提升性能
     pool_size=10,
     max_overflow=20,
     pool_pre_ping=True,
