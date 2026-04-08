@@ -77,7 +77,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-
 // --- 类型定义 ---
 interface Release {
   version: string;
