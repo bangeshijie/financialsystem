@@ -10,13 +10,20 @@ WORKDIR /app
 # 复制 package.json 和 lock 文件
 COPY package.json pnpm-lock.yaml ./
 
-# 安装依赖（使用 frozen-lockfile 确保 lock 文件一致）
-RUN pnpm install --frozen-lockfile
+# 限制 pnpm 安装时的并发和内存!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# --no-optional 跳过可选依赖，减少内存占用
+RUN pnpm install --frozen-lockfile --no-optional
 
 # 复制源代码
 COPY . .
 
-# 构建项目
+# 关键：限制 Node.js 内存为 512MB
+ENV NODE_OPTIONS="--max-old-space-size=512"
+
+# 限制线程池大小，降低并发
+ENV UV_THREADPOOL_SIZE=2
+
+# 构建项目（限制并发）
 RUN pnpm run build
 
 # 生产阶段
