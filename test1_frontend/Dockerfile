@@ -17,8 +17,8 @@ RUN pnpm install --frozen-lockfile --no-optional
 # 复制源代码
 COPY . .
 
-# 关键：限制 Node.js 内存为 512MB
-ENV NODE_OPTIONS="--max-old-space-size=512"
+# 关键：限制 Node.js 内存为 1024MB
+ENV NODE_OPTIONS="--max-old-space-size=1024"
 
 # 限制线程池大小，降低并发
 ENV UV_THREADPOOL_SIZE=2
