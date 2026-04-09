@@ -1,5 +1,5 @@
 # 使用 Node 24 Alpine 版本（体积小）
-FROM node:24-alpine AS builder
+FROM node:20-alpine AS builder
 
 # 启用 corepack 并使用 pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
