@@ -933,12 +933,12 @@ async def get_role_menus_with_selected(
         role_id: int
 ) -> List[Dict[str, Any]]:
     """
-    获取所有菜单，并标记当前角色已选中的菜单
+    获取所有菜单(状态为active的)，并标记当前角色已选中的菜单
     注意：只有叶子节点（按钮或最底层菜单）才标记 selected=True
     父节点的选中状态由前端树形控件自动处理
     """
     # 1. 获取所有菜单
-    all_menus_query = select(Menu).order_by(Menu.level, Menu.menu_id)
+    all_menus_query = select(Menu).where(Menu.status == "active").order_by(Menu.level, Menu.menu_id)
     all_menus_result = await db.execute(all_menus_query)
     all_menus = list(all_menus_result.scalars().all())
 

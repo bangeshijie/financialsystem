@@ -8,7 +8,7 @@ from modules.account.routers import router as account
 from utils.exception_handlers import register_exception_handlers
 from contextlib import asynccontextmanager
 from db.session import AsyncSessionLocal, async_engine
-from db.init_db import init_db_tables, seed_default_users, seed_default_roles
+from db.init_db import  seed_default_users, seed_default_roles
 from fastapi.staticfiles import StaticFiles
 import logging
 
@@ -22,8 +22,6 @@ async def lifespan(app: FastAPI):
     logger.info("⏳ 应用正在启动...")
     async with AsyncSessionLocal() as session:
         try:
-            # 【已移除】表结构由 Alembic 管理，请使用 "alembic upgrade head" 命令更新结构
-            # await init_db_tables()
             await seed_default_roles()
             await seed_default_users()
             logger.info("✅ 数据库初始化完成！")
@@ -100,5 +98,4 @@ async def read_root():
 app.include_router(users)
 app.include_router(company)
 app.include_router(account)
-
 

@@ -571,7 +571,8 @@ async def create_menu_route(
 
     try:
         new_menu = await create_menu(db=db, menu_data=menu_data)
-        return new_menu
+        return success_response(message="新增成功", data=new_menu)
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"创建失败: {str(e)}")
 
@@ -602,7 +603,8 @@ async def update_menu_route(
         updated_menu = await update_menu(db=db, menu_id=menu_id, update_data=update_data)
         if not updated_menu:
             raise HTTPException(status_code=404, detail="更新失败，菜单未找到")
-        return updated_menu
+
+        return success_response(message="修改成功",data=updated_menu)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"更新失败: {str(e)}")
 
@@ -621,7 +623,8 @@ async def delete_menu_route(
     if not success:
         raise HTTPException(status_code=404, detail="菜单不存在或删除失败")
 
-    return None
+    return success_response(message="删除成功", data=None)
+
 
 
 # 4. 物理删除 Menu - 如果需要彻底删除数据           前端暂时不用!!!!!!!!!!!!!!!!!!!!!!

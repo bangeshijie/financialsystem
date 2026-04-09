@@ -1,6 +1,7 @@
 <template>
     <div>
-        <el-table :data="permisstionArr" style="width: 100%; margin-bottom: 20px" row-key="menu_id" border indent=16>
+        <!-- indent 展示树形数据时，树节点的缩进长度  :indent="16" - JavaScript 表达式，会被解析为数字,不能用 indent=16 -->
+        <el-table :data="permisstionArr" style="width: 100%; margin-bottom: 20px" row-key="menu_id" border :indent="16">
             <el-table-column prop="name" label="名称" width="200px"></el-table-column>
             <el-table-column prop="code" label="权限值" width="200px"></el-table-column>
             <el-table-column prop="updateTime" label="修改时间" width="150px" show-overflow-tooltip></el-table-column>

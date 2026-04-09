@@ -276,39 +276,29 @@ export const asyncRoutes = [
             hidden: false,
             icon: 'Postcard',
         },
-        children: [{
-            path: '/reports/income',
-            component: () => import('@/views/reports/income/index.vue'),
-            name: 'Income',
-            meta: {
-                title: '利润表',
-                hidden: false,
-                icon: 'Coin',
-            },
-        },
-        {
-            path: '/reports/balance',
-            component: () => import('@/views/reports/balance/index.vue'),
-            name: 'Balance',
-            meta: {
-                title: '资产负债表',
-                hidden: false,
-                icon: 'Magnet',
-            },
+        children: [
 
 
-
-        },
-        {
-            path: '/reports/cashflow',
-            component: () => import('@/views/reports/cashflow/index.vue'),
-            name: 'Cashflow',
-            meta: {
-                title: '现金流表',
-                hidden: false,
-                icon: 'Money',
+            {
+                path: '/reports/financialreports',
+                component: () => import('@/views/reports/financialreports/index.vue'),
+                name: 'FinancialReports',
+                meta: {
+                    title: '财务会计报表',
+                    hidden: false,
+                    icon: 'Money',
+                },
             },
-        },
+            {
+                path: '/reports/revenuereports',
+                component: () => import('@/views/reports/revenuereports/index.vue'),
+                name: 'RevenueReports',
+                meta: {
+                    title: '收入报表',
+                    hidden: false,
+                    icon: 'Coin',
+                },
+            },
         ]
     },
 

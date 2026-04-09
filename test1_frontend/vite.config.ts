@@ -26,6 +26,22 @@ export default defineConfig(({ mode }) => {
         symbolId: 'icon-[name]',
       })
     ],
+    build: {
+      rollupOptions: {
+        output: {
+          // 手动拆分代码块
+          manualChunks: {
+            // 将大型框架单独打包
+            vue: ['vue', 'vue-router', 'pinia', 'axios'],
+            // 将大型工具库单独打包
+            charts: ['echarts'], // 假如你用了图表库
+            utils: ['lodash', 'moment'], // 假如你用了这些工具库
+          },
+        },
+      },
+    },
+
+
     resolve: {
       alias: {
         '@': path.resolve(__dirname, 'src'),

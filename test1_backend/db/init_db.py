@@ -9,13 +9,6 @@ from utils.security import get_hash_password
 from sqlalchemy import select
 
 
-async def init_db_tables():
-    """创建所有表结构"""
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    print("✅ 数据库表结构初始化完成")
-
-
 async def seed_default_roles():
     """
     初始化固定角色数据
@@ -135,7 +128,7 @@ async def seed_default_users():
 
 async def main():
     print("🚀 开始初始化数据库...")
-    # await init_db_tables()       因为有alembic迁移，这里不需要初始化表了 !!!!!!!
+
     await seed_default_roles()
     await seed_default_users()
     print("🎉 数据库初始化全部完成！")
