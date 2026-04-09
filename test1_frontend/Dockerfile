@@ -1,5 +1,5 @@
 # 使用 Node 24 Alpine 版本（体积小）
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 # 启用 corepack 并使用 pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -10,20 +10,13 @@ WORKDIR /app
 # 复制 package.json 和 lock 文件
 COPY package.json pnpm-lock.yaml ./
 
-# 限制 pnpm 安装时的并发和内存!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# --no-optional 跳过可选依赖，减少内存占用
-RUN pnpm install --frozen-lockfile --no-optional
+# 安装依赖（使用 frozen-lockfile 确保 lock 文件一致）
+RUN pnpm install --frozen-lockfile
 
 # 复制源代码
 COPY . .
 
-# 关键：限制 Node.js 内存为 1024MB
-ENV NODE_OPTIONS="--max-old-space-size=1024"
-
-# 限制线程池大小，降低并发
-ENV UV_THREADPOOL_SIZE=2
-
-# 构建项目（限制并发）
+# 构建项目
 RUN pnpm run build
 
 # 生产阶段
