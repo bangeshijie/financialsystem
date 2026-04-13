@@ -42,11 +42,7 @@ class Company(Base):
     created_by: Mapped[Optional[int]] = mapped_column(BigInteger, ForeignKey('user.user_id'), comment="创建人ID")
     updated_by: Mapped[Optional[int]] = mapped_column(BigInteger, ForeignKey('user.user_id'), comment="更新人ID")
 
-    # 【关键】：此处不再定义 creator/updater relationship
 
-    created_time: Mapped[datetime] = mapped_column(DateTime, default=func.now(), comment="创建时间")
-    updated_time: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now(),
-                                                   comment="更新时间")
 
     def __repr__(self):
         return f"<Company(id={self.id}, name='{self.name}')>"
