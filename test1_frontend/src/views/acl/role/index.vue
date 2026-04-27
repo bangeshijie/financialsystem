@@ -69,6 +69,7 @@
                 <!-- show-checkbox 是复选框  -->
                 <!-- node-key 每个树节点用来作为唯一标识的属性，整棵树应该是唯一的 -->
                 <!-- default-expand-all 默认全部展开 -->
+
                 <el-tree ref="tree" :data="menuArr" show-checkbox node-key="menu_id" default-expand-all
                     :default-checked-keys="selectArr" :props="defaultProps" />
             </template>
@@ -242,36 +243,64 @@ const setPermisstion = async (row: RoleData) => {
     let result: any = await reqAllMenuList((RoleParams.role_id as number));
 
     if (result.code == 200) {
-        // 打印完整的数据结构
-        console.log('完整返回数据:', result);
-        console.log('菜单树数据:', JSON.stringify(result.data, null, 2));
-
-        // 检查第一个节点是否有 selected 字段
-        if (result.data && result.data.length > 0) {
-            console.log('第一个节点:', result.data[0]);
-            console.log('第一个节点是否有selected字段:', 'selected' in result.data[0]);
-            console.log('第一个节点的selected值:', result.data[0].selected);
-        }
-
         menuArr.value = result.data;
 
-        // 收集选中的节点ID并设置默认勾选
-        const selectedIds = collectCheckedIds(result.data);
-        console.log('收集到的选中节点ID:', selectedIds);
+        // --- 关键改动：收集所有 selected 为 true 的按钮权限 ID ---
+        // 因为父子联动，只要勾选了按钮，其父页面也会被自动勾选
+        const traverseAndCollect = (nodes: any[], collectedIds: number[]) => {
+            nodes.forEach(node => {
+                // 只收集 type 为 2 (按钮) 且 selected 为 true 的节点 ID
+                // 页面权限会通过父子联动自动勾选，无需手动收集
+                if (node.type === 2 && node.selected) {
+                    collectedIds.push(node.menu_id);
+                }
 
-        selectArr.value = selectedIds;
+                // 递归处理子节点
+                if (node.children && Array.isArray(node.children)) {
+                    traverseAndCollect(node.children, collectedIds);
+                }
+            });
+        };
+
+        const initialCheckedButtonIds: number[] = [];
+        traverseAndCollect(result.data, initialCheckedButtonIds);
+
+        console.log('根据按钮权限推导出的初始勾选 IDs:', initialCheckedButtonIds);
+
+        // 设置初始勾选状态
+        // 因为父子联动，勾选按钮 ID 会自动勾选其父页面
+        selectArr.value = initialCheckedButtonIds;
+
+        // 等待 DOM 更新后设置勾选状态
+        nextTick(() => {
+            if (tree.value) {
+                tree.value.setCheckedKeys(selectArr.value);
+            }
+        });
     }
 }
+
 
 
 
 // 抽屉确定按钮的回调
 const handler = async () => {
     const role_id = (RoleParams.role_id as number);
-    // 获取所有选中的节点ID（包括半选和全选）
-    let checkedKeys = tree.value.getCheckedKeys();
-    let halfCheckedKeys = tree.value.getHalfCheckedKeys();
+
+    // --- 关键改动：获取所有被勾选的权限 ID ---
+    // getCheckedKeys() 会返回所有被勾选的节点 ID（包括因父子联动而被勾选的父节点）
+    // getHalfCheckedKeys() 会返回所有半选状态的节点 ID
+    // 我们需要提交所有被勾选的 ID，因为它们代表了最终的角色权限
+    let checkedKeys = tree.value.getCheckedKeys(); // 全选的节点 ID
+    let halfCheckedKeys = tree.value.getHalfCheckedKeys(); // 半选的节点 ID
+
+    // 合并全选和半选的 ID
     let permissionId = [...checkedKeys, ...halfCheckedKeys];
+    // 去重（理论上不会重复，但保险起见）
+    permissionId = [...new Set(permissionId)];
+    permissionId.sort((a, b) => a - b); // 可选：排序以便调试
+
+    console.log('最终提交的权限 IDs (包含页面和按钮，自动联动):', permissionId);
 
     let result: any = await reqAssignMenuPermissions(role_id, permissionId);
 

@@ -32,39 +32,41 @@ const userStore = useUserStore();
 const loginForm = reactive({ username: '', password: '' });
 // 登录按钮回调
 const handleLogin = async () => {
-
-  //表单校验
   await loginFormdata.value.validate();
-
-  //显示登录加载效果
   loading.value = true;
+
   try {
+    // 登录获取 token
     await userStore.useLogin(loginForm);
-    //编程导航跳转到首页
-    // 判断登录的时候,路由路径是否有query参数  有的话跳转到对应的页面 没有就跳转到首页
+
+    // 立即获取用户信息和动态路由
+    await userStore.userInfo();
+
+    // 获取重定向地址，如果没有则跳转首页
     let redirect = $route.query.redirect as string;
-    $router.push({ path: redirect || '/' });
+    let targetPath = redirect && redirect !== '/login' ? redirect : '/';
+
+    console.log('登录成功，跳转到:', targetPath);
+
+    // 使用 replace 进行跳转
+    await $router.replace(targetPath);
+
     ElNotification({
       title: `hi~${getTimeState()}`,
       message: '欢迎回来',
       type: 'success',
     });
-    // 登录成功加载效果也消失
-    loading.value = false;
-
   } catch (error) {
-    // 登录失败加载loading效果消失
-    loading.value = false;
-    console.log(error);
+    console.error('登录失败:', error);
     ElNotification({
       title: '错误',
       message: (error as Error).message,
       type: 'error',
     });
-
+  } finally {
+    loading.value = false;
   }
 }
-
 
 
 

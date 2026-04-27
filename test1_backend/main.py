@@ -4,6 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from modules.users.routers import router  as users
 from modules.company.routers import router  as company
+from modules.account.routers import router  as  account
+from modules.account_version.routers import router  as  account_version
+
 
 from utils.exception_handlers import register_exception_handlers
 from contextlib import asynccontextmanager
@@ -97,5 +100,10 @@ async def read_root():
 
 app.include_router(users)
 app.include_router(company)
+
+app.include_router(account)
+app.include_router(account_version)
+
+
 
 

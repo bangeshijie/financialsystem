@@ -124,11 +124,11 @@ export const useUserStore = defineStore("user", () => {
             // 发送登录请求
             const result: loginResponseData = await reqLogin(data);
 
-            // 登录成功 (code == 200)
+            // 登录成功 
             if (result.code == 200) {
                 const newToken = result.data.token;
 
-                // 更新 state (注意 .value)
+                // 更新 state 
                 token.value = newToken;
 
 
@@ -209,10 +209,10 @@ export const useUserStore = defineStore("user", () => {
      */
     const userLogout = async (): Promise<void> => {
         try {
-            // 1. 尝试调用后端退出 (即使失败也要继续执行前端清理)
+            // 1. 尝试调用后端退出（可选）
             await reqLogout().catch(() => { });
         } finally {
-            // 2. 清理 Token
+            // 2. 清理本地存储
             removeToken();
 
             // 3. 重置 Store 所有状态
@@ -227,13 +227,16 @@ export const useUserStore = defineStore("user", () => {
             roles.value = [];
             menuRoutes.value = constantRoutes;
 
-            // 4. 【核心】强制刷新页面或重定向到登录页
-            // 使用 location.href 会完全重新加载页面，彻底清除组件缓存
-            // 这样下一个用户登录时，是一个全新的应用实例
-            window.location.href = '/login';
+            // 4. 重置路由（清除动态添加的路由）
+            const routesToRemove = ['Acl', 'Dimensions', 'Reports', 'User', 'Role', 'Permission'];
+            routesToRemove.forEach(routeName => {
+                if (router.hasRoute(routeName)) {
+                    router.removeRoute(routeName);
+                }
+            });
 
-            // 注意：执行了 location.href 后，后面的代码不会执行，Promise 也不会 resolve
-            // 所以这里不需要 return 'ok'，因为页面已经跳走了
+            // 重要：不要在这里使用 window.location.href 跳转
+            // 让组件层来处理路由跳转
         }
     };
 

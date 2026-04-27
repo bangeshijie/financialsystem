@@ -19,7 +19,7 @@ async def seed_default_roles():
     roles_config: List[dict] = [
         {"role_name": "超级管理员", "remark": "系统最高权限，不可删除"},
         {"role_name": "普通管理员", "remark": "负责日常内容管理和用户审核"},
-        {"role_name": "编辑", "remark": "可以发布、编辑和下架文章"},
+        {"role_name": "演示用户", "remark": "不能操作增加编辑删除等按钮"},
         {"role_name": "普通用户", "remark": "系统默认注册用户角色"},
         {"role_name": "访客", "remark": "未登录或仅浏览权限"},
         {"role_name": "测试用户", "remark": "用于测试权限功能"},

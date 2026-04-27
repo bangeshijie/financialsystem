@@ -232,12 +232,26 @@ const handlePwdSubmit = async () => {
     }
 }
 
-
 // 退出登录
 const logout = async () => {
+    try {
+        // 先清除 store 状态和本地存储，但不进行页面跳转
+        await userStore.userLogout();
 
-    await userStore.userLogout();
-    $router.push({ path: '/login', query: { redirect: $route.fullPath } });
+        // 注意：userStore.userLogout() 中不应该有 window.location.href 跳转
+        // 如果已经有，需要先修改 userStore.userLogout()
+
+        // 使用 replace 而不是 push，避免产生历史记录
+        await $router.replace({
+            path: '/login',
+            query: { redirect: $route.fullPath }
+        });
+
+        ElMessage.success('已退出登录');
+    } catch (error) {
+        console.error('退出失败:', error);
+        ElMessage.error('退出失败');
+    }
 }
 
 // switch暗黑模式 方法

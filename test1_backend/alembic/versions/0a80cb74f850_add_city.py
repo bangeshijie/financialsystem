@@ -26,7 +26,7 @@ def upgrade() -> None:
     sa.Column('name', sa.String(length=32), nullable=False, comment='城市名称'),
     sa.Column('province', sa.String(length=32), nullable=False, comment='省份'),
     sa.Column('area', sa.String(length=32), nullable=False, comment='区域'),
-    sa.Column('category', sa.String(length=32), nullable=False, comment='城市分类'),
+    sa.Column('account_version', sa.String(length=32), nullable=False, comment='城市分类'),
     sa.Column('created_time', sa.DateTime(), server_default=sa.text('now()'), nullable=False, comment='创建时间'),
     sa.Column('updated_time', sa.DateTime(), server_default=sa.text('now()'), nullable=False, comment='更新时间'),
     sa.PrimaryKeyConstraint('id')

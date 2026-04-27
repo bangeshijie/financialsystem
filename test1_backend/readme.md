@@ -97,11 +97,22 @@ Alembic 的自动检测功能很强，但不是万能的。
 如果你和队友一起开发：
 队友修改了模型并提交了代码（包含 alembic/versions/ 下的新脚本）。
 你拉取代码后，只需要在本地执行：
-powershell
-
-编辑
 
 
 
-alembic upgrade head
+
+`alembic upgrade head`
+
 Alembic 会自动检测到你本地数据库缺哪些版本，并依次执行，把数据库结构同步到最新。
+
+### sqlalchemy
+SQLAlchemy 是一个 Python 数据库工具，用于数据库操作。
+#### 1安装
+#### 2用法
+##### 联合唯一约束
+联合唯一约束，即多个字段的组合必须唯一。
+  举例:同一版本下会计科目代码必须唯一
+`    __table_args__ = (
+        UniqueConstraint('code', 'account_version_id', name='uq_account_code_version'),
+    )`
+

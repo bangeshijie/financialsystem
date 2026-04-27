@@ -200,6 +200,19 @@ export const asyncRoutes = [
 
         },
         {
+            path: '/dimensions/category',
+            component: () => import('@/views/dimensions/dim_category/index.vue'),
+            name: 'Category',
+            meta: {
+                title: '版本管理',
+                hidden: false,
+                icon: 'GobletFull',
+            },
+
+
+
+        },
+        {
             path: '/dimensions/account',
             component: () => import('@/views/dimensions/dim_account/index.vue'),
             name: 'Account',
@@ -251,19 +264,7 @@ export const asyncRoutes = [
 
 
         },
-        {
-            path: '/dimensions/category',
-            component: () => import('@/views/dimensions/dim_category/index.vue'),
-            name: 'Category',
-            meta: {
-                title: '版本管理',
-                hidden: false,
-                icon: 'GobletFull',
-            },
-
-
-
-        }],
+        ],
     },
     {
 

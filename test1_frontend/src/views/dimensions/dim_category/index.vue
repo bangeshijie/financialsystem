@@ -1,14 +1,13 @@
-<script setup lang="ts">
+<!-- src/views/account/AccountVersion.vue -->
+<template>
+    <div>
+        <h2>版本管理</h2>
 
+    </div>
+</template>
+
+<script setup lang="ts">
 
 </script>
 
-<template>
-    <div>
-        <h1>我是版本管理</h1>
-
-    </div>
-
-</template>
-
-<style scoped lang="scss"></style>
+<style lang="scss" scoped></style>

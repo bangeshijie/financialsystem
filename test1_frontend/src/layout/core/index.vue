@@ -72,8 +72,8 @@ watch(() => layOutSettingStore.refsh, () => {
 .site-footer {
     width: 100%;
     padding: 20px 0;
-    background-color: #f5f5f5; // 背景色，根据设计需求调整
-    border-top: 1px solid #eaeaea; // 顶部边框
+
+
     margin-top: auto; // 如果使用 flex 布局，这行可以将 footer 推到底部
 
     .footer-content {
