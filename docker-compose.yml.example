@@ -22,7 +22,7 @@ services:
       retries: 10
 
   backend:
-    build: ./test1_backend
+    build: ./backend
     container_name: myapp-backend
     ports:
       - "8000:8000"
@@ -33,7 +33,7 @@ services:
       - MYSQL_PORT=3306
       - MYSQL_DB=fastapi_financial
     env_file:
-      - ./test1_backend/.env
+      - ./backend/.env
     depends_on:
       mysql:
         condition: service_healthy

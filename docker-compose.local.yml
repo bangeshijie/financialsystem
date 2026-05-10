@@ -19,12 +19,12 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p123456"]
       timeout: 20s
       retries: 10
-
-  backend:
-    build: ./test1_backend
-    container_name: myapp-backend
-    ports:
-      - "8001:8000"
+  # --- 数据库迁移服务 ---
+  alembic-migration:
+    build: backend
+    container_name: myapp-migration
+    # 核心：容器启动后只执行这一条命令，执行完就自动退出
+    command: alembic upgrade head
     environment:
       - MYSQL_USER=admin
       - MYSQL_PASSWORD=123456
@@ -32,13 +32,39 @@ services:
       - MYSQL_PORT=3306
       - MYSQL_DB=fastapi_financial
     env_file:
-      - ./test1_backend/.env
+      - backend/.env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: "no" # 关键：跑完就退出，不要自动重启
+
+
+  backend:
+    build: backend
+    container_name: myapp-backend
+    ports:
+      - "8001:8000"
+    volumes:
+      # 🔥 关键：把本地代码挂载到容器，实现实时同步
+      - ./backend:/code
+    environment:
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=123456
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DB=fastapi_financial
+    env_file:
+      - backend/.env.local
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       - app-network
     restart: unless-stopped
+      # 关键：使用 --reload 参数
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 networks:
   app-network:
@@ -46,4 +72,7 @@ networks:
 
 volumes:
   mysql-data:
+    driver: local
+    # 🔑 新增：上传文件的数据卷
+  uploads-data:
     driver: local

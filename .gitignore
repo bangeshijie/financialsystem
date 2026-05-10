@@ -18,7 +18,7 @@ backups/
 # 日志文件
 logs/
 *.log
-*.pid
+
 
 # Python
 __pycache__/
@@ -54,6 +54,7 @@ dist/
 # Docker
 *.pid
 docker-compose.override.yml
+docker-compose.local.yml
 
 # 临时文件
 temp/
@@ -66,6 +67,5 @@ uploads/
 static/uploads/
 # 敏感配置文件
 docker-compose.yml
-.env
 *.env
 *.env.local
